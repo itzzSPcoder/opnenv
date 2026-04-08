@@ -1,0 +1,14 @@
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.log
+.pytest_cache
+.mypy_cache
+.vscode
+Scaler School of Technology.html
+Scaler School of Technology_files
+scripts/*.sh

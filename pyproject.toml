@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "admission-helpdesk-openenv"
+version = "1.0.0"
+description = "Real-world OpenEnv admissions helpdesk benchmark"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi==0.115.8",
+  "uvicorn[standard]==0.34.0",
+  "pydantic==2.12.2",
+  "openai==2.30.0",
+  "openenv-core>=0.2.0",
+]
+
+[project.scripts]
+server = "server.app:main"
+
+[tool.setuptools]
+py-modules = ["app", "inference", "my_env_v4"]

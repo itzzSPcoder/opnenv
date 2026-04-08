@@ -1,0 +1,40 @@
+name: admission-helpdesk-openenv
+version: 1.0.0
+description: >-
+  Real-world admissions support environment where an agent triages, routes,
+  replies to, and closes student support tickets under SLA constraints.
+
+tags:
+  - openenv
+  - customer-support
+  - admissions
+  - triage
+
+entrypoint:
+  python_module: app:app
+
+environment:
+  class_path: my_env_v4.MyEnvV4Env
+  action_model: my_env_v4.MyEnvV4Action
+  observation_model: my_env_v4.MyEnvV4Observation
+  result_model: my_env_v4.MyEnvV4Result
+
+tasks:
+  - id: easy_priority_routing
+    difficulty: easy
+    description: Classify urgency and route one ticket to the correct team.
+    score_range: [0.0, 1.0]
+  - id: medium_resolution
+    difficulty: medium
+    description: Route correctly and provide policy-safe response before closure.
+    score_range: [0.0, 1.0]
+  - id: hard_sla_queue
+    difficulty: hard
+    description: Resolve a multi-ticket queue while managing SLAs and escalation.
+    score_range: [0.0, 1.0]
+
+api:
+  reset: /reset
+  step: /step
+  state: /state
+  close: /close
