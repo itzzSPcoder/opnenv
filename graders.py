@@ -10,6 +10,12 @@ from typing import Any, Dict, Iterable
 
 
 TASK_GRADERS: Dict[str, str] = {
+    "easy_priority_routing": "graders.grade_easy_priority_routing",
+    "medium_resolution": "graders.grade_medium_resolution",
+    "hard_sla_queue": "graders.grade_hard_sla_queue",
+}
+
+TASK_GRADERS_COLON: Dict[str, str] = {
     "easy_priority_routing": "graders:grade_easy_priority_routing",
     "medium_resolution": "graders:grade_medium_resolution",
     "hard_sla_queue": "graders:grade_hard_sla_queue",

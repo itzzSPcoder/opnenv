@@ -274,9 +274,14 @@ class MyEnvV4Env:
 
     async def state(self) -> Dict[str, object]:
         return {
+            "task_id": self._task_name,
             "task_name": self._task_name,
             "task_grader": TASK_GRADERS.get(self._task_name),
             "task_grader_colon": TASK_GRADERS_COLON.get(self._task_name),
+            "grader": TASK_GRADERS.get(self._task_name),
+            "grader_fn": TASK_GRADERS.get(self._task_name),
+            "grader_path": TASK_GRADERS.get(self._task_name),
+            "agent_grader": TASK_GRADERS_COLON.get(self._task_name),
             "objective": self._objective,
             "step": self._step_count,
             "max_steps": self._max_steps,
@@ -285,6 +290,8 @@ class MyEnvV4Env:
             "remaining_sla": copy.deepcopy(self._remaining_sla),
             "total_reward": round(self._total_reward, 4),
             "normalized_score": round(self._compute_score(), 4),
+            "score": round(self._compute_score(), 4),
+            "score_range": [0.0, 1.0],
             "done": self._is_done(),
             "last_action_error": self._last_action_error,
         }
@@ -469,10 +476,18 @@ class MyEnvV4Env:
         return all_closed or self._step_count >= self._max_steps
 
     def _build_info(self, error: Optional[str] = None) -> Dict[str, object]:
+        score = round(self._compute_score(), 4)
         return {
+            "task_id": self._task_name,
             "task_name": self._task_name,
             "task_grader": TASK_GRADERS.get(self._task_name),
             "task_grader_colon": TASK_GRADERS_COLON.get(self._task_name),
-            "normalized_score": round(self._compute_score(), 4),
+            "grader": TASK_GRADERS.get(self._task_name),
+            "grader_fn": TASK_GRADERS.get(self._task_name),
+            "grader_path": TASK_GRADERS.get(self._task_name),
+            "agent_grader": TASK_GRADERS_COLON.get(self._task_name),
+            "normalized_score": score,
+            "score": score,
+            "score_range": [0.0, 1.0],
             "last_action_error": error if error is not None else self._last_action_error,
         }

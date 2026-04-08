@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from pydantic import BaseModel
 
 from my_env_v4 import (
@@ -11,6 +11,27 @@ from my_env_v4 import (
 
 app = FastAPI(title="Admission Helpdesk OpenEnv", version="1.0.0")
 _env = MyEnvV4Env()
+
+
+def _task_rows() -> list[dict[str, object]]:
+    return [
+        {
+            "id": task_id,
+            "task_id": task_id,
+            "name": task_id,
+            "task_name": task_id,
+            "difficulty": task_meta.get("difficulty", "unknown"),
+            "description": task_meta.get("objective"),
+            "objective": task_meta.get("objective"),
+            "grader": TASK_GRADERS.get(task_id),
+            "grader_fn": TASK_GRADERS.get(task_id),
+            "grader_path": TASK_GRADERS.get(task_id),
+            "agent_grader": TASK_GRADERS_COLON.get(task_id),
+            "grader_colon": TASK_GRADERS_COLON.get(task_id),
+            "score_range": [0.0, 1.0],
+        }
+        for task_id, task_meta in TASK_LIBRARY.items()
+    ]
 
 
 class ResetRequest(BaseModel):
@@ -33,9 +54,13 @@ async def health() -> dict[str, str]:
 
 @app.get("/metadata")
 async def metadata() -> dict[str, str]:
+    rows = _task_rows()
+    graders_count = sum(1 for row in rows if row.get("grader") or row.get("grader_fn"))
     return {
         "name": "admission-helpdesk-openenv",
         "description": "Real-world admissions support environment where an agent triages, routes, replies to, and closes student support tickets under SLA constraints.",
+        "tasks_count": str(len(rows)),
+        "tasks_with_graders": str(graders_count),
     }
 
 
@@ -55,26 +80,15 @@ async def reset(payload: ResetRequest | None = None) -> dict:
 
 
 @app.get("/tasks")
-async def tasks() -> dict[str, object]:
-    return {
-        "tasks": [
-            {
-                "id": task_id,
-                "name": task_id,
-                "task_name": task_id,
-                "difficulty": task_meta.get("difficulty", "unknown"),
-                "description": task_meta.get("objective"),
-                "objective": task_meta.get("objective"),
-                "grader": TASK_GRADERS.get(task_id),
-                "grader_fn": TASK_GRADERS.get(task_id),
-                "grader_path": TASK_GRADERS.get(task_id),
-                "agent_grader": TASK_GRADERS_COLON.get(task_id),
-                "grader_colon": TASK_GRADERS_COLON.get(task_id),
-                "score_range": [0.0, 1.0],
-            }
-            for task_id, task_meta in TASK_LIBRARY.items()
-        ]
-    }
+async def tasks(format: str | None = Query(default=None)) -> object:
+    rows = _task_rows()
+    if (format or "").lower() in {"object", "dict", "wrapped"}:
+        return {
+            "tasks": rows,
+            "count": len(rows),
+            "tasks_with_graders": sum(1 for row in rows if row.get("grader") or row.get("grader_fn")),
+        }
+    return rows
 
 
 @app.post("/step")
