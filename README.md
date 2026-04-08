@@ -1,3 +1,9 @@
+---
+title: Admission Helpdesk OpenEnv
+sdk: docker
+pinned: false
+---
+
 # Admission Helpdesk OpenEnv
 
 A real-world OpenEnv benchmark environment that simulates admissions support operations.
