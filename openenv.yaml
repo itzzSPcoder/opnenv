@@ -20,32 +20,55 @@ environment:
   result_model: my_env_v4.MyEnvV4Result
 
 graders:
-  easy_priority_routing: "graders:grade_easy_priority_routing"
-  medium_resolution: "graders:grade_medium_resolution"
-  hard_sla_queue: "graders:grade_hard_sla_queue"
+  easy_priority_routing: "graders.grade_easy_priority_routing"
+  medium_resolution: "graders.grade_medium_resolution"
+  hard_sla_queue: "graders.grade_hard_sla_queue"
+
+task_graders:
+  - task_id: easy_priority_routing
+    task_name: easy_priority_routing
+    grader: "graders.grade_easy_priority_routing"
+    agent_grader: "graders:grade_easy_priority_routing"
+  - task_id: medium_resolution
+    task_name: medium_resolution
+    grader: "graders.grade_medium_resolution"
+    agent_grader: "graders:grade_medium_resolution"
+  - task_id: hard_sla_queue
+    task_name: hard_sla_queue
+    grader: "graders.grade_hard_sla_queue"
+    agent_grader: "graders:grade_hard_sla_queue"
 
 tasks:
   - id: easy_priority_routing
+    name: easy_priority_routing
+    task_name: easy_priority_routing
     difficulty: easy
     description: Classify urgency and route one ticket to the correct team.
     score_range: [0.0, 1.0]
-    grader: "graders:grade_easy_priority_routing"
+    grader: "graders.grade_easy_priority_routing"
     grader_fn: "graders.grade_easy_priority_routing"
     agent_grader: "graders:grade_easy_priority_routing"
+    grader_colon: "graders:grade_easy_priority_routing"
   - id: medium_resolution
+    name: medium_resolution
+    task_name: medium_resolution
     difficulty: medium
     description: Route correctly and provide policy-safe response before closure.
     score_range: [0.0, 1.0]
-    grader: "graders:grade_medium_resolution"
+    grader: "graders.grade_medium_resolution"
     grader_fn: "graders.grade_medium_resolution"
     agent_grader: "graders:grade_medium_resolution"
+    grader_colon: "graders:grade_medium_resolution"
   - id: hard_sla_queue
+    name: hard_sla_queue
+    task_name: hard_sla_queue
     difficulty: hard
     description: Resolve a multi-ticket queue while managing SLAs and escalation.
     score_range: [0.0, 1.0]
-    grader: "graders:grade_hard_sla_queue"
+    grader: "graders.grade_hard_sla_queue"
     grader_fn: "graders.grade_hard_sla_queue"
     agent_grader: "graders:grade_hard_sla_queue"
+    grader_colon: "graders:grade_hard_sla_queue"
 
 api:
   reset: /reset

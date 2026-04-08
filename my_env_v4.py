@@ -162,6 +162,12 @@ TASK_LIBRARY: Dict[str, Dict[str, object]] = {
 
 
 TASK_GRADERS: Dict[str, str] = {
+    "easy_priority_routing": "graders.grade_easy_priority_routing",
+    "medium_resolution": "graders.grade_medium_resolution",
+    "hard_sla_queue": "graders.grade_hard_sla_queue",
+}
+
+TASK_GRADERS_COLON: Dict[str, str] = {
     "easy_priority_routing": "graders:grade_easy_priority_routing",
     "medium_resolution": "graders:grade_medium_resolution",
     "hard_sla_queue": "graders:grade_hard_sla_queue",
@@ -270,6 +276,7 @@ class MyEnvV4Env:
         return {
             "task_name": self._task_name,
             "task_grader": TASK_GRADERS.get(self._task_name),
+            "task_grader_colon": TASK_GRADERS_COLON.get(self._task_name),
             "objective": self._objective,
             "step": self._step_count,
             "max_steps": self._max_steps,
@@ -465,6 +472,7 @@ class MyEnvV4Env:
         return {
             "task_name": self._task_name,
             "task_grader": TASK_GRADERS.get(self._task_name),
+            "task_grader_colon": TASK_GRADERS_COLON.get(self._task_name),
             "normalized_score": round(self._compute_score(), 4),
             "last_action_error": error if error is not None else self._last_action_error,
         }

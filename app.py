@@ -1,7 +1,13 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from my_env_v4 import MyEnvV4Action, MyEnvV4Env, TASK_GRADERS, TASK_LIBRARY
+from my_env_v4 import (
+    MyEnvV4Action,
+    MyEnvV4Env,
+    TASK_GRADERS,
+    TASK_GRADERS_COLON,
+    TASK_LIBRARY,
+)
 
 app = FastAPI(title="Admission Helpdesk OpenEnv", version="1.0.0")
 _env = MyEnvV4Env()
@@ -54,12 +60,16 @@ async def tasks() -> dict[str, object]:
         "tasks": [
             {
                 "id": task_id,
+                "name": task_id,
+                "task_name": task_id,
                 "difficulty": task_meta.get("difficulty", "unknown"),
                 "description": task_meta.get("objective"),
                 "objective": task_meta.get("objective"),
                 "grader": TASK_GRADERS.get(task_id),
                 "grader_fn": TASK_GRADERS.get(task_id),
-                "agent_grader": TASK_GRADERS.get(task_id),
+                "grader_path": TASK_GRADERS.get(task_id),
+                "agent_grader": TASK_GRADERS_COLON.get(task_id),
+                "grader_colon": TASK_GRADERS_COLON.get(task_id),
                 "score_range": [0.0, 1.0],
             }
             for task_id, task_meta in TASK_LIBRARY.items()
