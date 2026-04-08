@@ -283,6 +283,65 @@ TASK_LIBRARY: Dict[str, Dict[str, object]] = {
             ),
         ],
     },
+    "medium_fee_installment_plan": {
+        "difficulty": "medium",
+        "objective": "Guide fee installment planning with correct finance routing and policy-safe language.",
+        "tickets": [
+            TicketCase(
+                ticket_id="M-225",
+                text=(
+                    "Can I pay semester fee in two installments due to temporary financial constraints? "
+                    "Please share approval process."
+                ),
+                student_tier="domestic",
+                channel="email",
+                intent="fee_installment_plan",
+                required_priority="medium",
+                required_team="finance",
+                must_include_terms=["policy", "documents", "timeline"],
+                forbidden_terms=["guarantee", "immediate"],
+                needs_escalation=False,
+                starting_sla_minutes=100,
+            )
+        ],
+    },
+    "hard_recheck_deadline_blocker": {
+        "difficulty": "hard",
+        "objective": "Resolve a deadline-critical blocker queue with escalation on the highest-risk ticket.",
+        "tickets": [
+            TicketCase(
+                ticket_id="H-331",
+                text=(
+                    "My admission dashboard incorrectly shows payment pending though UPI payment is successful. "
+                    "Last date is tonight."
+                ),
+                student_tier="domestic",
+                channel="chat",
+                intent="payment_status_deadline_blocker",
+                required_priority="high",
+                required_team="finance",
+                must_include_terms=["priority", "receipt", "timeline"],
+                forbidden_terms=["wait", "ignore"],
+                needs_escalation=True,
+                starting_sla_minutes=35,
+            ),
+            TicketCase(
+                ticket_id="H-332",
+                text=(
+                    "My conditional offer letter has a typo in passport number. I need corrected copy urgently."
+                ),
+                student_tier="international",
+                channel="email",
+                intent="offer_letter_correction",
+                required_priority="high",
+                required_team="admissions",
+                must_include_terms=["visa", "letter", "priority"],
+                forbidden_terms=["wait", "ignore"],
+                needs_escalation=False,
+                starting_sla_minutes=55,
+            ),
+        ],
+    },
 }
 
 
@@ -290,22 +349,26 @@ TASK_GRADERS: Dict[str, str] = {
     "easy_priority_routing": "graders.grade_easy_priority_routing",
     "medium_resolution": "graders.grade_medium_resolution",
     "hard_sla_queue": "graders.grade_hard_sla_queue",
-    "easy_doc_status_followup": "graders.grade_easy_priority_routing",
-    "easy_hostel_change_request": "graders.grade_easy_priority_routing",
-    "medium_scholarship_appeal": "graders.grade_medium_resolution",
-    "medium_deferral_process": "graders.grade_medium_resolution",
-    "hard_multi_channel_escalation": "graders.grade_hard_sla_queue",
+    "easy_doc_status_followup": "graders.grade_easy_doc_status_followup",
+    "easy_hostel_change_request": "graders.grade_easy_hostel_change_request",
+    "medium_scholarship_appeal": "graders.grade_medium_scholarship_appeal",
+    "medium_deferral_process": "graders.grade_medium_deferral_process",
+    "hard_multi_channel_escalation": "graders.grade_hard_multi_channel_escalation",
+    "medium_fee_installment_plan": "graders.grade_medium_fee_installment_plan",
+    "hard_recheck_deadline_blocker": "graders.grade_hard_recheck_deadline_blocker",
 }
 
 TASK_GRADERS_COLON: Dict[str, str] = {
     "easy_priority_routing": "graders:grade_easy_priority_routing",
     "medium_resolution": "graders:grade_medium_resolution",
     "hard_sla_queue": "graders:grade_hard_sla_queue",
-    "easy_doc_status_followup": "graders:grade_easy_priority_routing",
-    "easy_hostel_change_request": "graders:grade_easy_priority_routing",
-    "medium_scholarship_appeal": "graders:grade_medium_resolution",
-    "medium_deferral_process": "graders:grade_medium_resolution",
-    "hard_multi_channel_escalation": "graders:grade_hard_sla_queue",
+    "easy_doc_status_followup": "graders:grade_easy_doc_status_followup",
+    "easy_hostel_change_request": "graders:grade_easy_hostel_change_request",
+    "medium_scholarship_appeal": "graders:grade_medium_scholarship_appeal",
+    "medium_deferral_process": "graders:grade_medium_deferral_process",
+    "hard_multi_channel_escalation": "graders:grade_hard_multi_channel_escalation",
+    "medium_fee_installment_plan": "graders:grade_medium_fee_installment_plan",
+    "hard_recheck_deadline_blocker": "graders:grade_hard_recheck_deadline_blocker",
 }
 
 

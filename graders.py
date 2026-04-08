@@ -13,22 +13,26 @@ TASK_GRADERS: Dict[str, str] = {
     "easy_priority_routing": "graders.grade_easy_priority_routing",
     "medium_resolution": "graders.grade_medium_resolution",
     "hard_sla_queue": "graders.grade_hard_sla_queue",
-    "easy_doc_status_followup": "graders.grade_easy_priority_routing",
-    "easy_hostel_change_request": "graders.grade_easy_priority_routing",
-    "medium_scholarship_appeal": "graders.grade_medium_resolution",
-    "medium_deferral_process": "graders.grade_medium_resolution",
-    "hard_multi_channel_escalation": "graders.grade_hard_sla_queue",
+    "easy_doc_status_followup": "graders.grade_easy_doc_status_followup",
+    "easy_hostel_change_request": "graders.grade_easy_hostel_change_request",
+    "medium_scholarship_appeal": "graders.grade_medium_scholarship_appeal",
+    "medium_deferral_process": "graders.grade_medium_deferral_process",
+    "hard_multi_channel_escalation": "graders.grade_hard_multi_channel_escalation",
+    "medium_fee_installment_plan": "graders.grade_medium_fee_installment_plan",
+    "hard_recheck_deadline_blocker": "graders.grade_hard_recheck_deadline_blocker",
 }
 
 TASK_GRADERS_COLON: Dict[str, str] = {
     "easy_priority_routing": "graders:grade_easy_priority_routing",
     "medium_resolution": "graders:grade_medium_resolution",
     "hard_sla_queue": "graders:grade_hard_sla_queue",
-    "easy_doc_status_followup": "graders:grade_easy_priority_routing",
-    "easy_hostel_change_request": "graders:grade_easy_priority_routing",
-    "medium_scholarship_appeal": "graders:grade_medium_resolution",
-    "medium_deferral_process": "graders:grade_medium_resolution",
-    "hard_multi_channel_escalation": "graders:grade_hard_sla_queue",
+    "easy_doc_status_followup": "graders:grade_easy_doc_status_followup",
+    "easy_hostel_change_request": "graders:grade_easy_hostel_change_request",
+    "medium_scholarship_appeal": "graders:grade_medium_scholarship_appeal",
+    "medium_deferral_process": "graders:grade_medium_deferral_process",
+    "hard_multi_channel_escalation": "graders:grade_hard_multi_channel_escalation",
+    "medium_fee_installment_plan": "graders:grade_medium_fee_installment_plan",
+    "hard_recheck_deadline_blocker": "graders:grade_hard_recheck_deadline_blocker",
 }
 
 
@@ -174,11 +178,53 @@ def grade_hard_sla_queue(*args: Any, **kwargs: Any) -> float:
     return _grade_from_inputs("hard_sla_queue", *args, **kwargs)
 
 
+def grade_easy_doc_status_followup(*args: Any, **kwargs: Any) -> float:
+    return _grade_from_inputs("easy_doc_status_followup", *args, **kwargs)
+
+
+def grade_easy_hostel_change_request(*args: Any, **kwargs: Any) -> float:
+    return _grade_from_inputs("easy_hostel_change_request", *args, **kwargs)
+
+
+def grade_medium_scholarship_appeal(*args: Any, **kwargs: Any) -> float:
+    return _grade_from_inputs("medium_scholarship_appeal", *args, **kwargs)
+
+
+def grade_medium_deferral_process(*args: Any, **kwargs: Any) -> float:
+    return _grade_from_inputs("medium_deferral_process", *args, **kwargs)
+
+
+def grade_hard_multi_channel_escalation(*args: Any, **kwargs: Any) -> float:
+    return _grade_from_inputs("hard_multi_channel_escalation", *args, **kwargs)
+
+
+def grade_medium_fee_installment_plan(*args: Any, **kwargs: Any) -> float:
+    return _grade_from_inputs("medium_fee_installment_plan", *args, **kwargs)
+
+
+def grade_hard_recheck_deadline_blocker(*args: Any, **kwargs: Any) -> float:
+    return _grade_from_inputs("hard_recheck_deadline_blocker", *args, **kwargs)
+
+
 def grade_task(task_id: str, *args: Any, **kwargs: Any) -> float:
-    if task_id in {"easy_priority_routing", "easy_doc_status_followup", "easy_hostel_change_request"}:
+    if task_id == "easy_priority_routing":
         return grade_easy_priority_routing(*args, **kwargs)
-    if task_id in {"medium_resolution", "medium_scholarship_appeal", "medium_deferral_process"}:
+    if task_id == "medium_resolution":
         return grade_medium_resolution(*args, **kwargs)
-    if task_id in {"hard_sla_queue", "hard_multi_channel_escalation"}:
+    if task_id == "hard_sla_queue":
         return grade_hard_sla_queue(*args, **kwargs)
+    if task_id == "easy_doc_status_followup":
+        return grade_easy_doc_status_followup(*args, **kwargs)
+    if task_id == "easy_hostel_change_request":
+        return grade_easy_hostel_change_request(*args, **kwargs)
+    if task_id == "medium_scholarship_appeal":
+        return grade_medium_scholarship_appeal(*args, **kwargs)
+    if task_id == "medium_deferral_process":
+        return grade_medium_deferral_process(*args, **kwargs)
+    if task_id == "hard_multi_channel_escalation":
+        return grade_hard_multi_channel_escalation(*args, **kwargs)
+    if task_id == "medium_fee_installment_plan":
+        return grade_medium_fee_installment_plan(*args, **kwargs)
+    if task_id == "hard_recheck_deadline_blocker":
+        return grade_hard_recheck_deadline_blocker(*args, **kwargs)
     return 0.0
