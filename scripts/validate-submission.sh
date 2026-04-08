@@ -82,7 +82,7 @@ log "Repo:     $REPO_DIR"
 log "Ping URL: $PING_URL"
 printf "\n"
 
-log "${BOLD}Step 1/4: Basic required files${NC} ..."
+log "${BOLD}Step 1/5: Basic required files${NC} ..."
 if [ ! -f "$REPO_DIR/inference.py" ]; then
   fail "Missing inference.py at repository root"
   hint "Place your inference script at: $REPO_DIR/inference.py"
@@ -97,7 +97,7 @@ if [ ! -f "$REPO_DIR/openenv.yaml" ]; then
 fi
 pass "openenv.yaml found"
 
-log "${BOLD}Step 2/4: Pinging HF Space${NC} ($PING_URL/reset) ..."
+log "${BOLD}Step 2/5: Pinging HF Space${NC} ($PING_URL/reset) ..."
 
 CURL_OUTPUT=$(portable_mktemp "validate-curl")
 CLEANUP_FILES+=("$CURL_OUTPUT")
@@ -118,7 +118,7 @@ else
   stop_at "Step 2"
 fi
 
-log "${BOLD}Step 3/4: Running docker build${NC} ..."
+log "${BOLD}Step 3/5: Running docker build${NC} ..."
 
 if ! command -v docker >/dev/null 2>&1; then
   fail "docker command not found"
@@ -148,7 +148,7 @@ else
   stop_at "Step 3"
 fi
 
-log "${BOLD}Step 4/4: Running openenv validate${NC} ..."
+log "${BOLD}Step 4/5: Running openenv validate${NC} ..."
 
 if ! command -v openenv >/dev/null 2>&1; then
   fail "openenv command not found"
@@ -166,6 +166,33 @@ else
   fail "openenv validate failed"
   printf "%s\n" "$VALIDATE_OUTPUT"
   stop_at "Step 4"
+fi
+
+log "${BOLD}Step 5/5: Checking task graders${NC} ..."
+
+PYTHON_BIN=""
+if command -v python3 >/dev/null 2>&1; then
+  PYTHON_BIN="python3"
+elif command -v python >/dev/null 2>&1; then
+  PYTHON_BIN="python"
+fi
+
+if [ -z "$PYTHON_BIN" ]; then
+  fail "python interpreter not found"
+  hint "Install Python and ensure python3 or python is in PATH."
+  stop_at "Step 5"
+fi
+
+GRADER_OK=false
+GRADER_OUTPUT=$(cd "$REPO_DIR" && "$PYTHON_BIN" scripts/check_graders.py 2>&1) && GRADER_OK=true
+
+if [ "$GRADER_OK" = true ]; then
+  pass "grader smoke-check passed"
+  [ -n "$GRADER_OUTPUT" ] && log "  $GRADER_OUTPUT"
+else
+  fail "grader smoke-check failed"
+  printf "%s\n" "$GRADER_OUTPUT"
+  stop_at "Step 5"
 fi
 
 printf "\n"

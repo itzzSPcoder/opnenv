@@ -231,7 +231,10 @@ async def main() -> None:
     try:
         action_cls, _ = _load_env_classes()
         env = await _create_env()
-        result = await env.reset()
+        try:
+            result = await env.reset(task_name=TASK_NAME)
+        except TypeError:
+            result = await env.reset()
         last_echoed = getattr(result.observation, "echoed_message", "")
         last_reward = 0.0
         last_info = dict(getattr(result, "info", {}) or {})

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from my_env_v4 import MyEnvV4Action, MyEnvV4Env
+from my_env_v4 import MyEnvV4Action, MyEnvV4Env, TASK_GRADERS, TASK_LIBRARY
 
 app = FastAPI(title="Admission Helpdesk OpenEnv", version="1.0.0")
 _env = MyEnvV4Env()
@@ -26,9 +26,24 @@ async def health() -> dict[str, str]:
 
 
 @app.post("/reset")
-async def reset(_: ResetRequest | None = None) -> dict:
-    result = await _env.reset()
+async def reset(payload: ResetRequest | None = None) -> dict:
+    result = await _env.reset(task_name=(payload.task_name if payload else None))
     return result.model_dump()
+
+
+@app.get("/tasks")
+async def tasks() -> dict[str, object]:
+    return {
+        "tasks": [
+            {
+                "id": task_id,
+                "difficulty": task_meta.get("difficulty", "unknown"),
+                "objective": task_meta.get("objective"),
+                "grader": TASK_GRADERS.get(task_id),
+            }
+            for task_id, task_meta in TASK_LIBRARY.items()
+        ]
+    }
 
 
 @app.post("/step")

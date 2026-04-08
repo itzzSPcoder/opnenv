@@ -52,6 +52,16 @@ The environment includes 3 deterministic graded tasks:
 
 Each task returns normalized score in `[0.0, 1.0]` via `info.normalized_score`.
 
+Explicit agent graders are provided in `graders.py`:
+- `grade_easy_priority_routing`
+- `grade_medium_resolution`
+- `grade_hard_sla_queue`
+
+Each task in `openenv.yaml` includes explicit grader references (`grader`, `grader_fn`, `agent_grader`).
+
+To select a task at runtime, call:
+- `POST /reset` with `{"task_name": "easy_priority_routing"}` (or medium/hard task id)
+
 ## Reward Design
 
 Step rewards provide partial progress:

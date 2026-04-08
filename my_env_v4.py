@@ -158,6 +158,13 @@ TASK_LIBRARY: Dict[str, Dict[str, object]] = {
 }
 
 
+TASK_GRADERS: Dict[str, str] = {
+    "easy_priority_routing": "graders:grade_easy_priority_routing",
+    "medium_resolution": "graders:grade_medium_resolution",
+    "hard_sla_queue": "graders:grade_hard_sla_queue",
+}
+
+
 class MyEnvV4Env:
     def __init__(self, max_steps: int = 12) -> None:
         self._max_steps = max_steps
@@ -183,20 +190,20 @@ class MyEnvV4Env:
     async def from_local(cls) -> "MyEnvV4Env":
         return cls(max_steps=int(os.getenv("MAX_STEPS", "12")))
 
-    async def reset(self) -> MyEnvV4Result:
+    async def reset(self, task_name: Optional[str] = None) -> MyEnvV4Result:
         self._closed = False
         self._step_count = 0
         self._history = []
         self._total_reward = 0.0
         self._last_action_error = None
 
-        task_name = os.getenv("MY_ENV_V4_TASK", "easy_priority_routing")
-        if task_name not in TASK_LIBRARY:
-            task_name = "easy_priority_routing"
+        requested_task = task_name or os.getenv("MY_ENV_V4_TASK", "easy_priority_routing")
+        if requested_task not in TASK_LIBRARY:
+            requested_task = "easy_priority_routing"
             self._last_action_error = "unknown task, defaulted to easy_priority_routing"
 
-        self._task_name = task_name
-        task_data = TASK_LIBRARY[task_name]
+        self._task_name = requested_task
+        task_data = TASK_LIBRARY[requested_task]
         self._objective = str(task_data["objective"])
         self._tickets = copy.deepcopy(task_data["tickets"])
         self._active_index = 0
@@ -259,6 +266,7 @@ class MyEnvV4Env:
     async def state(self) -> Dict[str, object]:
         return {
             "task_name": self._task_name,
+            "task_grader": TASK_GRADERS.get(self._task_name),
             "objective": self._objective,
             "step": self._step_count,
             "max_steps": self._max_steps,
@@ -453,6 +461,7 @@ class MyEnvV4Env:
     def _build_info(self, error: Optional[str] = None) -> Dict[str, object]:
         return {
             "task_name": self._task_name,
+            "task_grader": TASK_GRADERS.get(self._task_name),
             "normalized_score": round(self._compute_score(), 4),
             "last_action_error": error if error is not None else self._last_action_error,
         }
