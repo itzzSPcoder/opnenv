@@ -21,7 +21,7 @@ LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME") or os.getenv("IMAGE_NAME")
 API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
 MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
 
-TASK_NAME = os.getenv("MY_ENV_V4_TASK") or os.getenv("MY_ENV_V4_TASKS") or "auto"
+TASK_NAME = os.getenv("MY_ENV_V4_TASK") or os.getenv("MY_ENV_V4_TASKS") or "all"
 BENCHMARK = os.getenv("MY_ENV_V4_BENCHMARK", "admission_helpdesk_v1")
 
 MAX_STEPS = int(os.getenv("MAX_STEPS", "12"))
@@ -288,8 +288,6 @@ async def main() -> None:
         task_sequence = _resolve_task_sequence(TASK_NAME)
         task_sequence = _ensure_minimum_task_coverage(task_sequence, min_tasks=3)
 
-        log_start(task=",".join(task_sequence), env=BENCHMARK, model=MODEL_NAME)
-
         should_use_llm = USE_LLM and bool(API_KEY)
         if API_KEY and API_KEY.lower().startswith("dummy"):
             should_use_llm = False
@@ -306,6 +304,9 @@ async def main() -> None:
             history: List[str] = []
             task_rewards: List[float] = []
 
+            # Per-task [START]
+            log_start(task=task_name, env=BENCHMARK, model=MODEL_NAME)
+
             try:
                 result = await env.reset(task_name=task_name)
             except TypeError:
@@ -314,6 +315,7 @@ async def main() -> None:
             last_echoed = getattr(result.observation, "echoed_message", "")
             last_reward = 0.0
             last_info = dict(getattr(result, "info", {}) or {})
+            task_steps = 0
 
             for step in range(1, MAX_STEPS + 1):
                 if bool(getattr(result, "done", False)):
@@ -335,6 +337,7 @@ async def main() -> None:
                 rewards.append(reward)
                 task_rewards.append(reward)
                 steps_taken += 1
+                task_steps += 1
                 last_echoed = getattr(getattr(result, "observation", None), "echoed_message", "")
                 last_reward = reward
 
@@ -359,6 +362,10 @@ async def main() -> None:
                 task_score = min(max(raw_task_score, 0.0), 1.0)
             episode_scores.append(task_score)
 
+            # Per-task [END]
+            task_success = task_score >= SUCCESS_SCORE_THRESHOLD
+            log_end(success=task_success, steps=task_steps, score=task_score, rewards=task_rewards)
+
         if episode_scores:
             score = min(max(sum(episode_scores) / len(episode_scores), 0.0), 1.0)
         else:
@@ -377,7 +384,6 @@ async def main() -> None:
                 await env.close()
             except Exception:
                 pass
-        log_end(success=success, steps=steps_taken, score=score, rewards=rewards)
 
 
 if __name__ == "__main__":
