@@ -22,7 +22,24 @@ async def root() -> dict[str, str]:
 
 @app.get("/health")
 async def health() -> dict[str, str]:
-    return {"status": "ok"}
+    return {"status": "healthy"}
+
+
+@app.get("/metadata")
+async def metadata() -> dict[str, str]:
+    return {
+        "name": "admission-helpdesk-openenv",
+        "description": "Real-world admissions support environment where an agent triages, routes, replies to, and closes student support tickets under SLA constraints.",
+    }
+
+
+@app.get("/schema")
+async def schema() -> dict[str, object]:
+    return {
+        "action": MyEnvV4Action.model_json_schema(),
+        "observation": MyEnvV4Env.observation_schema() if hasattr(MyEnvV4Env, 'observation_schema') else {"type": "object"},
+        "state": {"type": "object"},
+    }
 
 
 @app.post("/reset")
