@@ -62,6 +62,7 @@ class MyEnvV4Result(BaseModel):
 
 TASK_LIBRARY: Dict[str, Dict[str, object]] = {
     "easy_priority_routing": {
+        "difficulty": "easy",
         "objective": "Classify urgency and route a single ticket to the right support team.",
         "tickets": [
             TicketCase(
@@ -83,6 +84,7 @@ TASK_LIBRARY: Dict[str, Dict[str, object]] = {
         ],
     },
     "medium_resolution": {
+        "difficulty": "medium",
         "objective": "Route correctly and provide a policy-safe actionable response before closing.",
         "tickets": [
             TicketCase(
@@ -104,6 +106,7 @@ TASK_LIBRARY: Dict[str, Dict[str, object]] = {
         ],
     },
     "hard_sla_queue": {
+        "difficulty": "hard",
         "objective": "Handle a queue of mixed tickets under SLA pressure with correct escalation decisions.",
         "tickets": [
             TicketCase(

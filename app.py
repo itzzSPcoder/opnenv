@@ -38,8 +38,12 @@ async def tasks() -> dict[str, object]:
             {
                 "id": task_id,
                 "difficulty": task_meta.get("difficulty", "unknown"),
+                "description": task_meta.get("objective"),
                 "objective": task_meta.get("objective"),
                 "grader": TASK_GRADERS.get(task_id),
+                "grader_fn": TASK_GRADERS.get(task_id),
+                "agent_grader": TASK_GRADERS.get(task_id),
+                "score_range": [0.0, 1.0],
             }
             for task_id, task_meta in TASK_LIBRARY.items()
         ]
