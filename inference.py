@@ -11,7 +11,7 @@ import asyncio
 import os
 import re
 import textwrap
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 # MANDATORY vars for most leaderboard setups.
 API_KEY = os.getenv("HF_TOKEN") or os.getenv("API_KEY")
@@ -67,9 +67,13 @@ def log_start(task: str, env: str, model: str) -> None:
     print(f"[START] task={task} env={env} model={model}", flush=True)
 
 
-def log_step(step: int, action: str, reward: float, done: bool, error: Optional[str]) -> None:
+def log_step(
+    step: int, action: str, reward: float, done: bool, error: Optional[str], task: Optional[str] = None
+) -> None:
+    task_part = f"task={_sanitize_single_line(task)} " if task else ""
     print(
         "[STEP] "
+        f"{task_part}"
         f"step={step} "
         f"action={_sanitize_single_line(action)} "
         f"reward={reward:.2f} "
@@ -216,8 +220,39 @@ async def _create_env() -> Any:
     return await my_env_cls.from_local()
 
 
+def _load_known_tasks() -> List[str]:
+    try:
+        from my_env_v4 import TASK_LIBRARY
+
+        return [str(name) for name in TASK_LIBRARY.keys()]
+    except Exception:
+        return []
+
+
+def _resolve_task_sequence(task_spec: str) -> List[str]:
+    available = _load_known_tasks()
+    spec = (task_spec or "").strip()
+
+    if not spec:
+        return available[:1] if available else ["easy_priority_routing"]
+
+    low = spec.lower()
+    if low == "auto":
+        return available[:1] if available else ["easy_priority_routing"]
+    if low in {"all", "*"}:
+        return available if available else ["easy_priority_routing"]
+
+    if "," in spec:
+        requested = [item.strip() for item in spec.split(",") if item.strip()]
+        if available:
+            filtered = [item for item in requested if item in available]
+            return filtered or available[:1]
+        return requested
+
+    return [spec]
+
+
 async def main() -> None:
-    history: List[str] = []
     rewards: List[float] = []
     steps_taken = 0
     score = 0.0
@@ -226,18 +261,12 @@ async def main() -> None:
     client: Optional[Any] = None
     last_info: dict[str, Any] = {}
 
-    log_start(task=TASK_NAME, env=BENCHMARK, model=MODEL_NAME)
-
     try:
         action_cls, _ = _load_env_classes()
         env = await _create_env()
-        try:
-            result = await env.reset(task_name=TASK_NAME)
-        except TypeError:
-            result = await env.reset()
-        last_echoed = getattr(result.observation, "echoed_message", "")
-        last_reward = 0.0
-        last_info = dict(getattr(result, "info", {}) or {})
+        task_sequence = _resolve_task_sequence(TASK_NAME)
+
+        log_start(task=",".join(task_sequence), env=BENCHMARK, model=MODEL_NAME)
 
         should_use_llm = USE_LLM and bool(API_KEY)
         if API_KEY and API_KEY.lower().startswith("dummy"):
@@ -250,37 +279,66 @@ async def main() -> None:
             except Exception:
                 client = None
 
-        for step in range(1, MAX_STEPS + 1):
-            if bool(getattr(result, "done", False)):
-                break
-
-            action_text = get_model_message(client, step, last_echoed, last_reward, history)
+        episode_scores: List[float] = []
+        for task_name in task_sequence:
+            history: List[str] = []
+            task_rewards: List[float] = []
 
             try:
-                result = await env.step(action_cls(action=action_text))
-                reward = float(getattr(result, "reward", 0.0) or 0.0)
-                done = bool(getattr(result, "done", False))
-                error = _extract_last_error(result)
-                last_info = dict(getattr(result, "info", {}) or {})
-            except Exception as exc:
-                reward = 0.0
-                done = True
-                error = str(exc)
+                result = await env.reset(task_name=task_name)
+            except TypeError:
+                result = await env.reset()
 
-            rewards.append(reward)
-            steps_taken = step
-            last_echoed = getattr(getattr(result, "observation", None), "echoed_message", "")
-            last_reward = reward
+            last_echoed = getattr(result.observation, "echoed_message", "")
+            last_reward = 0.0
+            last_info = dict(getattr(result, "info", {}) or {})
 
-            log_step(step=step, action=action_text, reward=reward, done=done, error=error)
-            history.append(f"step={step} action={action_text!r} reward={reward:.2f}")
+            for step in range(1, MAX_STEPS + 1):
+                if bool(getattr(result, "done", False)):
+                    break
 
-            if done:
-                break
+                action_text = get_model_message(client, step, last_echoed, last_reward, history)
 
-        info_score = last_info.get("normalized_score")
-        if isinstance(info_score, (int, float)):
-            score = min(max(float(info_score), 0.0), 1.0)
+                try:
+                    result = await env.step(action_cls(action=action_text))
+                    reward = float(getattr(result, "reward", 0.0) or 0.0)
+                    done = bool(getattr(result, "done", False))
+                    error = _extract_last_error(result)
+                    last_info = dict(getattr(result, "info", {}) or {})
+                except Exception as exc:
+                    reward = 0.0
+                    done = True
+                    error = str(exc)
+
+                rewards.append(reward)
+                task_rewards.append(reward)
+                steps_taken += 1
+                last_echoed = getattr(getattr(result, "observation", None), "echoed_message", "")
+                last_reward = reward
+
+                log_step(
+                    step=step,
+                    action=action_text,
+                    reward=reward,
+                    done=done,
+                    error=error,
+                    task=task_name,
+                )
+                history.append(f"step={step} action={action_text!r} reward={reward:.2f}")
+
+                if done:
+                    break
+
+            info_score = last_info.get("normalized_score")
+            if isinstance(info_score, (int, float)):
+                task_score = min(max(float(info_score), 0.0), 1.0)
+            else:
+                raw_task_score = sum(task_rewards) / MAX_TOTAL_REWARD
+                task_score = min(max(raw_task_score, 0.0), 1.0)
+            episode_scores.append(task_score)
+
+        if episode_scores:
+            score = min(max(sum(episode_scores) / len(episode_scores), 0.0), 1.0)
         else:
             raw_score = sum(rewards) / MAX_TOTAL_REWARD
             score = min(max(raw_score, 0.0), 1.0)
