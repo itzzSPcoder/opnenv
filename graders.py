@@ -13,12 +13,22 @@ TASK_GRADERS: Dict[str, str] = {
     "easy_priority_routing": "graders.grade_easy_priority_routing",
     "medium_resolution": "graders.grade_medium_resolution",
     "hard_sla_queue": "graders.grade_hard_sla_queue",
+    "easy_doc_status_followup": "graders.grade_easy_priority_routing",
+    "easy_hostel_change_request": "graders.grade_easy_priority_routing",
+    "medium_scholarship_appeal": "graders.grade_medium_resolution",
+    "medium_deferral_process": "graders.grade_medium_resolution",
+    "hard_multi_channel_escalation": "graders.grade_hard_sla_queue",
 }
 
 TASK_GRADERS_COLON: Dict[str, str] = {
     "easy_priority_routing": "graders:grade_easy_priority_routing",
     "medium_resolution": "graders:grade_medium_resolution",
     "hard_sla_queue": "graders:grade_hard_sla_queue",
+    "easy_doc_status_followup": "graders:grade_easy_priority_routing",
+    "easy_hostel_change_request": "graders:grade_easy_priority_routing",
+    "medium_scholarship_appeal": "graders:grade_medium_resolution",
+    "medium_deferral_process": "graders:grade_medium_resolution",
+    "hard_multi_channel_escalation": "graders:grade_hard_sla_queue",
 }
 
 
@@ -165,10 +175,10 @@ def grade_hard_sla_queue(*args: Any, **kwargs: Any) -> float:
 
 
 def grade_task(task_id: str, *args: Any, **kwargs: Any) -> float:
-    if task_id == "easy_priority_routing":
+    if task_id in {"easy_priority_routing", "easy_doc_status_followup", "easy_hostel_change_request"}:
         return grade_easy_priority_routing(*args, **kwargs)
-    if task_id == "medium_resolution":
+    if task_id in {"medium_resolution", "medium_scholarship_appeal", "medium_deferral_process"}:
         return grade_medium_resolution(*args, **kwargs)
-    if task_id == "hard_sla_queue":
+    if task_id in {"hard_sla_queue", "hard_multi_channel_escalation"}:
         return grade_hard_sla_queue(*args, **kwargs)
     return 0.0

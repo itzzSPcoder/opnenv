@@ -158,6 +158,131 @@ TASK_LIBRARY: Dict[str, Dict[str, object]] = {
             ),
         ],
     },
+    "easy_doc_status_followup": {
+        "difficulty": "easy",
+        "objective": "Confirm pending document status and route to admissions with a clear next step.",
+        "tickets": [
+            TicketCase(
+                ticket_id="E-111",
+                text=(
+                    "My profile says migration certificate pending even after upload yesterday. "
+                    "Please verify before merit list freeze."
+                ),
+                student_tier="domestic",
+                channel="email",
+                intent="document_status_followup",
+                required_priority="high",
+                required_team="admissions",
+                must_include_terms=["documents", "review", "deadline"],
+                forbidden_terms=["guarantee", "ignore"],
+                needs_escalation=False,
+                starting_sla_minutes=70,
+            )
+        ],
+    },
+    "easy_hostel_change_request": {
+        "difficulty": "easy",
+        "objective": "Route hostel room change request to the correct team and respond with policy-safe guidance.",
+        "tickets": [
+            TicketCase(
+                ticket_id="E-112",
+                text=(
+                    "I was allotted a non-AC room by mistake though I selected AC preference. "
+                    "How can I raise hostel change request?"
+                ),
+                student_tier="domestic",
+                channel="chat",
+                intent="hostel_change_request",
+                required_priority="medium",
+                required_team="hostel",
+                must_include_terms=["policy", "documents", "timeline"],
+                forbidden_terms=["guarantee", "ignore"],
+                needs_escalation=False,
+                starting_sla_minutes=95,
+            )
+        ],
+    },
+    "medium_scholarship_appeal": {
+        "difficulty": "medium",
+        "objective": "Triage scholarship appeal correctly and send actionable finance guidance before closure.",
+        "tickets": [
+            TicketCase(
+                ticket_id="M-215",
+                text=(
+                    "My scholarship amount is lower than what was shown in provisional offer. "
+                    "I want to file appeal and know required proofs."
+                ),
+                student_tier="domestic",
+                channel="email",
+                intent="scholarship_appeal",
+                required_priority="medium",
+                required_team="finance",
+                must_include_terms=["policy", "documents", "timeline"],
+                forbidden_terms=["guarantee", "immediate"],
+                needs_escalation=False,
+                starting_sla_minutes=100,
+            )
+        ],
+    },
+    "medium_deferral_process": {
+        "difficulty": "medium",
+        "objective": "Guide a deferral request with admissions-safe response and proper routing.",
+        "tickets": [
+            TicketCase(
+                ticket_id="M-216",
+                text=(
+                    "Due to medical reasons I need to defer admission to next semester. "
+                    "Please share process and last date."
+                ),
+                student_tier="domestic",
+                channel="chat",
+                intent="deferral_process",
+                required_priority="medium",
+                required_team="admissions",
+                must_include_terms=["policy", "documents", "timeline"],
+                forbidden_terms=["guarantee", "ignore"],
+                needs_escalation=False,
+                starting_sla_minutes=90,
+            )
+        ],
+    },
+    "hard_multi_channel_escalation": {
+        "difficulty": "hard",
+        "objective": "Handle high-risk multi-ticket queue with correct escalation and SLA-safe sequencing.",
+        "tickets": [
+            TicketCase(
+                ticket_id="H-321",
+                text=(
+                    "I paid hostel and tuition, but ERP still shows dues and blocks registration. "
+                    "Classes start tomorrow."
+                ),
+                student_tier="domestic",
+                channel="email",
+                intent="payment_sync_blocker",
+                required_priority="high",
+                required_team="finance",
+                must_include_terms=["priority", "receipt", "timeline"],
+                forbidden_terms=["wait", "ignore"],
+                needs_escalation=True,
+                starting_sla_minutes=45,
+            ),
+            TicketCase(
+                ticket_id="H-322",
+                text=(
+                    "I cannot access online orientation module due to SSO error on portal."
+                ),
+                student_tier="international",
+                channel="chat",
+                intent="sso_access_issue",
+                required_priority="medium",
+                required_team="tech",
+                must_include_terms=["issue", "screenshot", "fix"],
+                forbidden_terms=["ignore"],
+                needs_escalation=False,
+                starting_sla_minutes=75,
+            ),
+        ],
+    },
 }
 
 
@@ -165,12 +290,22 @@ TASK_GRADERS: Dict[str, str] = {
     "easy_priority_routing": "graders.grade_easy_priority_routing",
     "medium_resolution": "graders.grade_medium_resolution",
     "hard_sla_queue": "graders.grade_hard_sla_queue",
+    "easy_doc_status_followup": "graders.grade_easy_priority_routing",
+    "easy_hostel_change_request": "graders.grade_easy_priority_routing",
+    "medium_scholarship_appeal": "graders.grade_medium_resolution",
+    "medium_deferral_process": "graders.grade_medium_resolution",
+    "hard_multi_channel_escalation": "graders.grade_hard_sla_queue",
 }
 
 TASK_GRADERS_COLON: Dict[str, str] = {
     "easy_priority_routing": "graders:grade_easy_priority_routing",
     "medium_resolution": "graders:grade_medium_resolution",
     "hard_sla_queue": "graders:grade_hard_sla_queue",
+    "easy_doc_status_followup": "graders:grade_easy_priority_routing",
+    "easy_hostel_change_request": "graders:grade_easy_priority_routing",
+    "medium_scholarship_appeal": "graders:grade_medium_resolution",
+    "medium_deferral_process": "graders:grade_medium_resolution",
+    "hard_multi_channel_escalation": "graders:grade_hard_sla_queue",
 }
 
 

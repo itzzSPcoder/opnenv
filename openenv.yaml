@@ -23,6 +23,11 @@ graders:
   easy_priority_routing: "graders.grade_easy_priority_routing"
   medium_resolution: "graders.grade_medium_resolution"
   hard_sla_queue: "graders.grade_hard_sla_queue"
+  easy_doc_status_followup: "graders.grade_easy_priority_routing"
+  easy_hostel_change_request: "graders.grade_easy_priority_routing"
+  medium_scholarship_appeal: "graders.grade_medium_resolution"
+  medium_deferral_process: "graders.grade_medium_resolution"
+  hard_multi_channel_escalation: "graders.grade_hard_sla_queue"
 
 task_graders:
   - task_id: easy_priority_routing
@@ -35,6 +40,26 @@ task_graders:
     agent_grader: "graders:grade_medium_resolution"
   - task_id: hard_sla_queue
     task_name: hard_sla_queue
+    grader: "graders.grade_hard_sla_queue"
+    agent_grader: "graders:grade_hard_sla_queue"
+  - task_id: easy_doc_status_followup
+    task_name: easy_doc_status_followup
+    grader: "graders.grade_easy_priority_routing"
+    agent_grader: "graders:grade_easy_priority_routing"
+  - task_id: easy_hostel_change_request
+    task_name: easy_hostel_change_request
+    grader: "graders.grade_easy_priority_routing"
+    agent_grader: "graders:grade_easy_priority_routing"
+  - task_id: medium_scholarship_appeal
+    task_name: medium_scholarship_appeal
+    grader: "graders.grade_medium_resolution"
+    agent_grader: "graders:grade_medium_resolution"
+  - task_id: medium_deferral_process
+    task_name: medium_deferral_process
+    grader: "graders.grade_medium_resolution"
+    agent_grader: "graders:grade_medium_resolution"
+  - task_id: hard_multi_channel_escalation
+    task_name: hard_multi_channel_escalation
     grader: "graders.grade_hard_sla_queue"
     agent_grader: "graders:grade_hard_sla_queue"
 
@@ -64,6 +89,56 @@ tasks:
     task_name: hard_sla_queue
     difficulty: hard
     description: Resolve a multi-ticket queue while managing SLAs and escalation.
+    score_range: [0.0, 1.0]
+    grader: "graders.grade_hard_sla_queue"
+    grader_fn: "graders.grade_hard_sla_queue"
+    agent_grader: "graders:grade_hard_sla_queue"
+    grader_colon: "graders:grade_hard_sla_queue"
+  - id: easy_doc_status_followup
+    name: easy_doc_status_followup
+    task_name: easy_doc_status_followup
+    difficulty: easy
+    description: Verify pending document status and provide admission-safe next steps.
+    score_range: [0.0, 1.0]
+    grader: "graders.grade_easy_priority_routing"
+    grader_fn: "graders.grade_easy_priority_routing"
+    agent_grader: "graders:grade_easy_priority_routing"
+    grader_colon: "graders:grade_easy_priority_routing"
+  - id: easy_hostel_change_request
+    name: easy_hostel_change_request
+    task_name: easy_hostel_change_request
+    difficulty: easy
+    description: Route a hostel change request and respond with safe policy guidance.
+    score_range: [0.0, 1.0]
+    grader: "graders.grade_easy_priority_routing"
+    grader_fn: "graders.grade_easy_priority_routing"
+    agent_grader: "graders:grade_easy_priority_routing"
+    grader_colon: "graders:grade_easy_priority_routing"
+  - id: medium_scholarship_appeal
+    name: medium_scholarship_appeal
+    task_name: medium_scholarship_appeal
+    difficulty: medium
+    description: Handle scholarship appeal workflow with valid routing and policy terms.
+    score_range: [0.0, 1.0]
+    grader: "graders.grade_medium_resolution"
+    grader_fn: "graders.grade_medium_resolution"
+    agent_grader: "graders:grade_medium_resolution"
+    grader_colon: "graders:grade_medium_resolution"
+  - id: medium_deferral_process
+    name: medium_deferral_process
+    task_name: medium_deferral_process
+    difficulty: medium
+    description: Guide admission deferral request with proper process and timeline language.
+    score_range: [0.0, 1.0]
+    grader: "graders.grade_medium_resolution"
+    grader_fn: "graders.grade_medium_resolution"
+    agent_grader: "graders:grade_medium_resolution"
+    grader_colon: "graders:grade_medium_resolution"
+  - id: hard_multi_channel_escalation
+    name: hard_multi_channel_escalation
+    task_name: hard_multi_channel_escalation
+    difficulty: hard
+    description: Resolve a complex queue under SLA pressure with correct escalation choices.
     score_range: [0.0, 1.0]
     grader: "graders.grade_hard_sla_queue"
     grader_fn: "graders.grade_hard_sla_queue"
