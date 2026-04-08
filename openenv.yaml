@@ -25,21 +25,21 @@ graders:
   hard_sla_queue: "graders:grade_hard_sla_queue"
 
 tasks:
-  easy_priority_routing:
+  - id: easy_priority_routing
     difficulty: easy
     description: Classify urgency and route one ticket to the correct team.
     score_range: [0.0, 1.0]
     grader: "graders:grade_easy_priority_routing"
     grader_fn: "graders.grade_easy_priority_routing"
     agent_grader: "graders:grade_easy_priority_routing"
-  medium_resolution:
+  - id: medium_resolution
     difficulty: medium
     description: Route correctly and provide policy-safe response before closure.
     score_range: [0.0, 1.0]
     grader: "graders:grade_medium_resolution"
     grader_fn: "graders.grade_medium_resolution"
     agent_grader: "graders:grade_medium_resolution"
-  hard_sla_queue:
+  - id: hard_sla_queue
     difficulty: hard
     description: Resolve a multi-ticket queue while managing SLAs and escalation.
     score_range: [0.0, 1.0]
